@@ -1,0 +1,18 @@
+{
+  "name": "pdf-ar",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
+    "axios": "^1.10.0",
+    "express": "^5.1.0",
+    "pdf-lib": "^1.17.1"
+  }
+}
