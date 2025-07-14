@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منشئ تقارير العقارات</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: #f5f7fa; color: #333; line-height: 1.6; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.08); }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #7f8c8d; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #2c3e50; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        textarea { min-height: 100px; }
+        .btn { 
+            background: #3498db; 
+            color: white; 
+            border: none; 
+            padding: 14px 25px; 
+            font-size: 18px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            width: 100%; 
+            transition: all 0.3s; 
+            font-weight: bold;
+        }
+        .btn:hover { background: #2980b9; transform: translateY(-2px); }
+        .btn.secondary { background: #2ecc71; }
+        .logo-preview { display: flex; gap: 15px; margin: 15px 0; }
+        .logo-container { 
+            width: 100px; height: 100px; 
+            border: 2px dashed #3498db; 
+            border-radius: 10px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .gallery-preview { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+            gap: 10px; 
+            margin: 15px 0; 
+        }
+        .gallery-item { 
+            width: 100%; 
+            height: 100px; 
+            background-size: cover; 
+            background-position: center; 
+            border-radius: 8px; 
+            border: 1px solid #eee;
+        }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .action-buttons { display: flex; gap: 15px; margin: 20px 0; }
+        .loading { display: none; text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px; margin: 20px 0; }
+        @media (max-width: 600px) {
+            .two-col, .action-buttons { grid-template-columns: 1fr; flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 منشئ تقارير العقارات</h1>
+        <p class="subtitle">أدخل بيانات العقار لإنشاء تقرير PDF</p>
+        
+        <div class="action-buttons">
+            <button class="btn secondary" onclick="generateSamplePDF()">تقرير نموذجي</button>
+            <button class="btn" onclick="showJSONForm()">إدخال بيانات يدوي</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            ⏳ جاري إنشاء التقرير، الرجاء الانتظار...
+        </div>
+        
+        <form id="propertyForm" style="display: none;">
+            <div class="form-group">
+                <label>عنوان العقار:</label>
+                <input type="text" name="title" required placeholder="فيلا فاخرة بأبحر الشمالية">
+            </div>
+            
+            <div class="two-col">
+                <div class="form-group">
+                    <label>السعر (ريال سعودي):</label>
+                    <input type="number" name="price" required placeholder="174147140">
+                </div>
+                <div class="form-group">
+                    <label>المساحة (م²):</label>
+                    <input type="number" name="area" required placeholder="625.5">
+                </div>
+            </div>
+            
+            <div class="two-col">
+                <div class="form-group">
+                    <label>عدد الغرف:</label>
+                    <input type="number" name="bedrooms" placeholder="5">
+                </div>
+                <div class="form-group">
+                    <label>عدد الحمامات:</label>
+                    <input type="number" name="bathrooms" placeholder="6">
+                </div>
+            </div>
+            
+            <div class="two-col">
+                <div class="form-group">
+                    <label>مواقف السيارات:</label>
+                    <input type="number" name="parking" placeholder="3">
+                </div>
+                <div class="form-group">
+                    <label>سنة البناء:</label>
+                    <input type="number" name="yearBuilt" placeholder="2023">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>الموقع:</label>
+                <input type="text" name="location" placeholder="أبحر الشمالية">
+            </div>
+            
+            <div class="form-group">
+                <label>المدينة:</label>
+                <input type="text" name="city" placeholder="جدة">
+            </div>
+            
+            <div class="form-group">
+                <label>رقم التواصل:</label>
+                <input type="text" name="contactInfo" placeholder="+966 50 123 4567">
+            </div>
+            
+            <div class="form-group">
+                <label>المميزات (افصل بينها بفواصل):</label>
+                <input type="text" name="features" placeholder="تكييف مركزي, حديقة, مسبح, مرآب">
+            </div>
+            
+            <div class="form-group">
+                <label>الوصف:</label>
+                <textarea name="description" required placeholder="وصف تفصيلي للعقار..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>شعارات الشركة:</label>
+                <div class="logo-preview">
+                    <div class="logo-container" id="logo1Preview">شعار 1</div>
+                    <div class="logo-container" id="logo2Preview">شعار 2</div>
+                </div>
+                <div class="two-col">
+                    <input type="file" name="logo1" accept="image/*" onchange="previewLogo(event, 1)">
+                    <input type="file" name="logo2" accept="image/*" onchange="previewLogo(event, 2)">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>صور العقار:</label>
+                <div class="gallery-preview" id="galleryPreview"></div>
+                <input type="file" name="images" multiple accept="image/*" onchange="previewGallery(event)">
+            </div>
+            
+            <button type="submit" class="btn">إنشاء تقرير PDF</button>
+        </form>
+        
+        <div id="jsonForm" style="display: none;">
+            <div class="form-group">
+                <label>بيانات العقار (JSON):</label>
+                <textarea id="jsonData" style="height: 300px; font-family: monospace;"></textarea>
+            </div>
+            <button class="btn" onclick="generateFromJSON()">إنشاء من JSON</button>
+        </div>
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+        
+        function showJSONForm() {
+            document.getElementById('propertyForm').style.display = 'none';
+            document.getElementById('jsonForm').style.display = 'block';
+            document.getElementById('jsonData').value = JSON.stringify({
+  "title": "فيلا فاخرة بأبحر الشمالية",
+  "description": "الفرصة الأولى من اتجاه العقارية\n\nللبيع | فيلا فاخرة بأبحر الشمالية\n\t•\tتصميم إيطالي وتشطيبات راقية\n\t•\tمؤثثة بالكامل\n\t•\tالمساحة: 625.5 م²\n\t•\tتقع على شارعين\n\n📌 جميع التفاصيل مرفقة أدناه",
+  "price": 174147140,
+  "currency": "SAR",
+  "type": "VILLA",
+  "status": "AVAILABLE",
+  "bedrooms": 5,
+  "bathrooms": 6,
+  "area": 625.5,
+  "location": "أبحر الشمالية",
+  "city": "جدة",
+  "country": "السعودية",
+  "images": [
+    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+  ],
+  "features": [
+    "تكييف مركزي",
+    "حديقة",
+    "مسبح",
+    "مرآب"
+  ],
+  "yearBuilt": 2023,
+  "parking": 3,
+  "contactInfo": "+966 50 123 4567",
+  "companyLogos": []
+}, null, 2);
+        }
+        
+        function generateSamplePDF() {
+            showLoading();
+            fetch('/generate-sample-pdf')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'sample-property-report.pdf';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    hideLoading();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('حدث خطأ أثناء إنشاء التقرير');
+                    hideLoading();
+                });
+        }
+        
+        function generateFromJSON() {
+            showLoading();
+            try {
+                const jsonData = JSON.parse(document.getElementById('jsonData').value);
+                fetch('/generate-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(jsonData)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'property-report.pdf';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    hideLoading();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('حدث خطأ: ' + error.message);
+                    hideLoading();
+                });
+            } catch (error) {
+                alert('JSON غير صالح: ' + error.message);
+                hideLoading();
+            }
+        }
+
+        document.getElementById('propertyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            
+            const formData = new FormData(e.target);
+            fetch('/generate-pdf-form', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network error');
+                return response.blob();
+            })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'property-report.pdf';
+                a.click();
+                URL.revokeObjectURL(url);
+                hideLoading();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء إنشاء التقرير');
+                hideLoading();
+            });
+        });
+
+        function previewLogo(event, num) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById(`logo${num}Preview`).style.backgroundImage = `url(${e.target.result})`;
+                    document.getElementById(`logo${num}Preview`).innerHTML = '';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function previewGallery(event) {
+            const galleryPreview = document.getElementById('galleryPreview');
+            galleryPreview.innerHTML = '';
+            
+            Array.from(event.target.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const div = document.createElement('div');
+                    div.className = 'gallery-item';
+                    div.style.backgroundImage = `url(${e.target.result})`;
+                    galleryPreview.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Show property form by default
+        document.getElementById('propertyForm').style.display = 'block';
+    </script>
+</body>
+</html>
