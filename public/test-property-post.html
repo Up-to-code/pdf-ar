@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>اختبار إرسال عقار</title>
+  <script src="frontend-api.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; direction: rtl; margin: 40px; }
+    label { display: block; margin-top: 10px; }
+    input, textarea { width: 300px; margin-top: 5px; }
+    button { margin-top: 20px; padding: 8px 20px; }
+    .result { margin-top: 20px; color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h2>اختبار إرسال بيانات عقار</h2>
+  <form id="propertyForm">
+    <label>العنوان: <input name="title" required></label>
+    <label>السعر: <input name="price" type="number" required></label>
+    <label>العملة: <input name="currency" required></label>
+    <label>الموقع: <input name="location" required></label>
+    <label>المدينة: <input name="city" required></label>
+    <label>الدولة: <input name="country" required></label>
+    <label>المساحة: <input name="area" type="number" required></label>
+    <label>عدد الغرف: <input name="bedrooms" type="number" required></label>
+    <label>عدد الحمامات: <input name="bathrooms" type="number" required></label>
+    <label>مواقف السيارات: <input name="parking" type="number" required></label>
+    <label>سنة البناء: <input name="yearBuilt" type="number" required></label>
+    <label>نوع العقار: <input name="type" required></label>
+    <label>الوصف: <textarea name="description" required></textarea></label>
+    <label>المميزات (افصل بينها بفاصلة): <input name="features" required></label>
+    <label>روابط الصور (افصل بينها بفاصلة): <input name="images" required></label>
+    <label>معلومات التواصل: <input name="contactInfo" required></label>
+    <button type="submit">إرسال</button>
+  </form>
+  <div id="result" class="result"></div>
+  <script>
+    document.getElementById('propertyForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const property = {
+        title: form.title.value,
+        price: Number(form.price.value),
+        currency: form.currency.value,
+        location: form.location.value,
+        city: form.city.value,
+        country: form.country.value,
+        area: Number(form.area.value),
+        bedrooms: Number(form.bedrooms.value),
+        bathrooms: Number(form.bathrooms.value),
+        parking: Number(form.parking.value),
+        yearBuilt: Number(form.yearBuilt.value),
+        type: form.type.value,
+        description: form.description.value,
+        features: form.features.value.split(','),
+        images: form.images.value.split(','),
+        contactInfo: form.contactInfo.value
+      };
+      const resultDiv = document.getElementById('result');
+      resultDiv.textContent = '';
+      resultDiv.className = 'result';
+      const res = await postProperty(property);
+      if (res.success) {
+        resultDiv.textContent = 'تم الإرسال بنجاح!';
+        resultDiv.className = 'result';
+      } else {
+        resultDiv.textContent = 'فشل الإرسال: ' + (res.errors ? res.errors.join(', ') : (res.error ? res.error.message : '')); 
+        resultDiv.className = 'result error';
+      }
+    };
+  </script>
+</body>
+</html> 
