@@ -76,7 +76,9 @@ app.post('/generate-pdf', async (req, res) => {
       details: error.details.map(d => d.message) 
     });
     const pdfBytes = await generatePropertyPDF(value);
-    const filename = `تقرير-${value.title.replace(/\s+/g, '-')}-${Date.now()}.pdf`;
+    // Fix: Use only ASCII characters in filename
+    const safeTitle = value.title.replace(/[^a-zA-Z0-9-_]/g, '');
+    const filename = `report-${safeTitle || 'property'}-${Date.now()}.pdf`;
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="${filename}"`
