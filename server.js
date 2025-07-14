@@ -164,6 +164,11 @@ app.get('/generate-sample-pdf', async (req, res) => {
   }
 });
 
+// Add a root route for health check and Railway compatibility
+app.get('/', (req, res) => {
+  res.send('PDF-AR API is running!');
+});
+
 // =============== SERVER INIT ===============
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
