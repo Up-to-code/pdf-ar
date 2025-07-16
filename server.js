@@ -70,11 +70,7 @@ const sampleProperty = {
 // POST: Generate PDF from JSON property data
 app.post('/generate-pdf', async (req, res) => {
   try {
-    const { error, value } = propertySchema.validate(req.body);
-    if (error) return res.status(400).json({ 
-      error: 'Validation error',
-      details: error.details.map(d => d.message) 
-    });
+
     const pdfBytes = await generatePropertyPDF(value);
     // Fix: Use only ASCII characters in filename
     const safeTitle = value.title.replace(/[^a-zA-Z0-9-_]/g, '');
