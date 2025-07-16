@@ -70,10 +70,30 @@ const sampleProperty = {
 // POST: Generate PDF from JSON property data
 app.post('/generate-pdf', async (req, res) => {
   try {
-    // Generate PDF from JSON property data
-    const pdfBytes = await generatePropertyPDF(req.body);
-    // Fix: Use only ASCII characters in filename
-    const safeTitle = value.title.replace(/[^a-zA-Z0-9-_]/g, '');
+    // Use default values for required fields if missing
+    const property = {
+      title: req.body.title || 'Property',
+      description: req.body.description || 'No description provided.',
+      price: req.body.price || 0,
+      currency: req.body.currency || 'SAR',
+      type: req.body.type || 'RESIDENTIAL',
+      status: req.body.status || 'AVAILABLE',
+      bedrooms: req.body.bedrooms || 0,
+      bathrooms: req.body.bathrooms || 0,
+      area: req.body.area || 0,
+      location: req.body.location || 'Unknown',
+      city: req.body.city || 'Unknown',
+      country: req.body.country || 'Unknown',
+      images: req.body.images || [],
+      features: req.body.features || [],
+      yearBuilt: req.body.yearBuilt || new Date().getFullYear(),
+      parking: req.body.parking || 0,
+      contactInfo: req.body.contactInfo || '',
+      marketer: req.body.marketer || { name: '', role: '' }
+    };
+    const pdfBytes = await generatePropertyPDF(property);
+    // Use only ASCII characters in filename
+    const safeTitle = property.title.replace(/[^a-zA-Z0-9-_]/g, '');
     const filename = `report-${safeTitle || 'property'}-${Date.now()}.pdf`;
     res.set({
       'Content-Type': 'application/pdf',
