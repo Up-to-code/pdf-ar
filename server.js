@@ -29,7 +29,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(DIRECTORIES.PUBLIC));
-
+app.use((req, res, next) => { 
+  console.log(`${req.method} ${req.url}`);
+  console.log(req.body );
+  next();
+});
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, DIRECTORIES.UPLOADS),
@@ -69,6 +73,7 @@ const sampleProperty = {
 
 // POST: Generate PDF from JSON property data
 app.post('/generate-pdf', async (req, res) => {
+  console.log('POST /generate-pdf' + JSON.stringify(req.body));
   try {
     // Use default values for required fields if missing
     const property = {
