@@ -1,0 +1,19 @@
+{
+  "name": "@pdf-ar/pdf-engine",
+  "version": "1.0.0",
+  "description": "Reusable Arabic/RTL property PDF generation engine.",
+  "license": "ISC",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src",
+    "fonts"
+  ],
+  "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
+    "axios": "^1.10.0",
+    "pdf-lib": "^1.17.1",
+    "zod": "^3.25.28"
+  }
+}
