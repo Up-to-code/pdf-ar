@@ -98,3 +98,7 @@ The Hono backend is mounted inside Next at `/api`.
 npm test
 npm run build
 ```
+
+## Project links
+
+[Source](https://github.com/Up-to-code/pdf-ar) · [Issues](https://github.com/Up-to-code/pdf-ar/issues) · [Public project directory](https://github.com/qentrah/.github/blob/main/profile/PROJECTS.md)
